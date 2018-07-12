@@ -91,50 +91,10 @@ class IVC2(Strategy):
             self.previous_ask = None
             self.previous_bid = None
     
-        #####################################################################################
-        #Utility Functions
-        #####################################################################################
-        def exists(self, ts): 
-            return True if ts in self.ts_to_minutes else False
+        #########################################################################
+        #Core Methods. (Meant to be called upon from outside the class instance)
+        #########################################################################
         
-        def add_new_minute(self, ts):
-            self.ts_to_minutes[ts] = self.MinuteBar(ts)
-            self.size_ts_to_minutes += 1
-            
-        def add_last(self, ts, last, last_size, ask, bid):
-            self.previous_ask = ask if self.previous_ask == None else self.previous_ask
-            self.previous_bid = bid if self.previous_bid == None else self.previous_bid
-            self.ts_to_minutes[ts].add_last(last, last_size, ask, bid, self.previous_ask, self.previous_bid)
-            self.previous_ask = ask
-            self.previous_bid = bid
-            
-        def get_day_count_print(self):
-            return sum(tuple(self.ts_to_minutes[ts].print_count for ts in self.ts_to_minutes)) 
-        
-        def get_print_count_for_each_min(self):
-            return tuple(self.ts_to_minutes[ts].print_count for ts in self.ts_to_minutes)
-        
-        def get_day_sum_range(self):
-            return sum(tuple(self.ts_to_minutes[ts].get_range() for ts in self.ts_to_minutes))
-        
-        def get_day_sum_volume(self):
-            return sum(tuple(self.ts_to_minutes[ts].total_size for ts in self.ts_to_minutes))
-    
-        def get_count_prints_above_ask(self):
-            return tuple(self.ts_to_minutes[ts].prints_above_ask for ts in self.ts_to_minutes)
-        
-        def get_count_prints_below_bid(self):
-            return tuple(self.ts_to_minutes[ts].prints_below_bid for ts in self.ts_to_minutes)
-        
-        def get_vol_exec_ator_above_ask(self, ts):
-            return self.ts_to_minutes[ts].vol_at_or_above_ask
-            
-        def get_vol_exec_ator_below_bid(self, ts):
-            return self.ts_to_minutes[ts].vol_at_or_below_bid 
-        
-        ###############################################################################################
-        #These functions are the core functions that return intraday calculations.
-        ###############################################################################################
         #1. Average numer of prints each minute during market hours.
         def get_day_average_prints(self):
             return float(self.get_day_count_print())/float(self.size_ts_to_minutes)
@@ -180,7 +140,48 @@ class IVC2(Strategy):
         #10.Number of news events today. (pre and post market)
         #News events are tallied outside of this class. To retrieve the tally call self.news_count on on_finish
         
+        #########################################################################
+        #Utility Methods. (Not meant to be called outside of the class instance.)
+        #########################################################################
         
+        def exists(self, ts): 
+            return True if ts in self.ts_to_minutes else False
+        
+        def add_new_minute(self, ts):
+            self.ts_to_minutes[ts] = self.MinuteBar(ts)
+            self.size_ts_to_minutes += 1
+            
+        def add_last(self, ts, last, last_size, ask, bid):
+            self.previous_ask = ask if self.previous_ask == None else self.previous_ask
+            self.previous_bid = bid if self.previous_bid == None else self.previous_bid
+            self.ts_to_minutes[ts].add_last(last, last_size, ask, bid, self.previous_ask, self.previous_bid)
+            self.previous_ask = ask
+            self.previous_bid = bid
+            
+        def get_day_count_print(self):
+            return sum(tuple(self.ts_to_minutes[ts].print_count for ts in self.ts_to_minutes)) 
+        
+        def get_print_count_for_each_min(self):
+            return tuple(self.ts_to_minutes[ts].print_count for ts in self.ts_to_minutes)
+        
+        def get_day_sum_range(self):
+            return sum(tuple(self.ts_to_minutes[ts].get_range() for ts in self.ts_to_minutes))
+        
+        def get_day_sum_volume(self):
+            return sum(tuple(self.ts_to_minutes[ts].total_size for ts in self.ts_to_minutes))
+    
+        def get_count_prints_above_ask(self):
+            return tuple(self.ts_to_minutes[ts].prints_above_ask for ts in self.ts_to_minutes)
+        
+        def get_count_prints_below_bid(self):
+            return tuple(self.ts_to_minutes[ts].prints_below_bid for ts in self.ts_to_minutes)
+        
+        def get_vol_exec_ator_above_ask(self, ts):
+            return self.ts_to_minutes[ts].vol_at_or_above_ask
+            
+        def get_vol_exec_ator_below_bid(self, ts):
+            return self.ts_to_minutes[ts].vol_at_or_below_bid 
+               
     
         #MinuteBar is a storage container that stores all the relevant information we wish to capture during a trading day.
         #   The functions located within are utility function and are soley meant to automate certain calculations.
@@ -220,7 +221,6 @@ class IVC2(Strategy):
                 self.ask.append(ask)
                 self.bid.append(bid)
                 
-
             def add_volume(self, last_size):
                 self.total_size += last_size
 
