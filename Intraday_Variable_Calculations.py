@@ -118,13 +118,13 @@ class IVC2(Strategy):
             return sum(tuple(self.ts_to_minutes[ts].get_range() for ts in self.ts_to_minutes))
         
         def get_day_sum_volume(self):
-            return sum(tuple(self.ts_to_minutes[ts].get_total_volume() for ts in self.ts_to_minutes))
+            return sum(tuple(self.ts_to_minutes[ts].total_size for ts in self.ts_to_minutes))
     
         def get_count_prints_above_ask(self):
-            return tuple(self.ts_to_minutes[ts].get_count_prints_above_ask() for ts in self.ts_to_minutes)
+            return tuple(self.ts_to_minutes[ts].prints_above_ask for ts in self.ts_to_minutes)
         
         def get_count_prints_below_bid(self):
-            return tuple(self.ts_to_minutes[ts].get_count_prints_below_bid() for ts in self.ts_to_minutes)
+            return tuple(self.ts_to_minutes[ts].prints_below_bid for ts in self.ts_to_minutes)
         
         def get_vol_exec_ator_above_ask(self, ts):
             return self.ts_to_minutes[ts].vol_at_or_above_ask
@@ -223,19 +223,7 @@ class IVC2(Strategy):
 
             def add_volume(self, last_size):
                 self.total_size += last_size
-            
-            def get_total_volume(self):
-                return self.total_size
-                
-            def get_count(self):
-                return self.print_count
 
-            def get_timestamp(self):
-                return self.timestamp
-            
-            def get_prints(self):
-                return ' '.join(str(last)for last in self.last_price)
-                
             def set_high(self, last):
                 self.high = last if (last > self.high) else self.high
             
@@ -244,9 +232,6 @@ class IVC2(Strategy):
             
             def get_range(self):
                 return abs(self.high - self.low)
-
-            def get_extrema(self):
-                return str(self.high) + " " + str(self.low)
             
             def is_print_above_ask(self, last, ask):
                 if last > ask:
@@ -275,17 +260,5 @@ class IVC2(Strategy):
                     self.BB_increase_count += 1
                 elif bid < previous_bid:
                     self.BB_decrease_count += 1
-            
-            def get_count_prints_above_ask(self):
-                return self.prints_above_ask
-            
-            def get_count_prints_below_bid(self):
-                return self.prints_below_bid
-            
-            def to_string(self):
-                return str(self.get_timestamp()) + str(self.get_count()) + str(self.get_prints()) 
-            
-            def print_high_low(self):
-                return "Timestamp: " + self.timestamp + " Extrema: " + self.get_extrema()
             
             
